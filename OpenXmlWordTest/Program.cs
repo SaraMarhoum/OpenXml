@@ -15,11 +15,11 @@ namespace OpenXmlWordTest
         static void Main(string[] args)
         {
 
-            //string filepath = @"C:\Users\smarhoum\Documents\Osmose\Word\Prénom Nom.docx";
             string filepath = "TestDoc2.docx";
             //ReadWordDoc(filepath);
             //ReadWordDocLoopParagraph(filepath);
-            ReadWordDocLoopParagraphAndSplitToHTML(filepath);
+            //ReadWordDocLoopParagraphAndSplitToHTML(filepath);
+            FindstyleParagraphs(filepath);
         }
 
          
@@ -51,11 +51,25 @@ namespace OpenXmlWordTest
 
                 var paragraphs = wordDocument.MainDocumentPart.RootElement.Descendants<Paragraph>();
 
+                // string [] parArray;
+
                 foreach (var paragraph in paragraphs)
                 {
-                    Console.WriteLine(paragraph.InnerText);
+                    string par = paragraph.InnerText;
+
+                    //parArray[] = par;
+
+                    //Console.WriteLine(paragraph.LocalName());
                 }
+
+                // foreach( int i in parArray)
+                // {
+                //     Console.WriteLine(parArray[i]);
+
+                // }
+
                 Console.ReadKey();
+
             }
 
         }
@@ -68,21 +82,43 @@ namespace OpenXmlWordTest
                 //var writer=File.CreateText("Paragraph4.txt");
                 var Lines = wordDocument.MainDocumentPart.RootElement.Descendants<ParagraphStyleId>();
 
-                var paragraphTextes = wordDocument.MainDocumentPart.RootElement.Descendants<Paragraph>();
+                var paragraphs= wordDocument.MainDocumentPart.RootElement.Descendants<Paragraph>();
 
-                    foreach (var line in Lines) 
+                    foreach (var paragraph in paragraphs) 
                     {
-                       
-                       if(line.Val != "Titre1")
-                       {
 
-                            //Delete the line from the docx
+                        Console.WriteLine(paragraph.InnerText);
+                       
+                    //    if(line.Val == "Titre1" || line.Val == "titre2" || line.Val == "titre3" )
+                    //    {
+
+                    //         //Delete the line from the docx
                             
-                       }
+                    //    }
                          
                     }
             }
 
+        }
+
+        public static void FindstyleParagraphs(string filepath)
+        {
+            using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(filepath, true))
+            {
+                var paragraphs = new List<Paragraph>();
+                paragraphs = wordDocument.MainDocumentPart.Document.Body
+                .OfType<Paragraph>()
+                .Where(p => p.ParagraphProperties != null && 
+                        p.ParagraphProperties.ParagraphStyleId != null && 
+                        p.ParagraphProperties.ParagraphStyleId.Val.Value.Contains("Titre1")).ToList();
+
+                        foreach (var paragraph in paragraphs)
+                        {
+                            Console.WriteLine(paragraph.InnerText);
+                            File.CreateText(paragraph.InnerText + ".txt");
+                        }
+                            
+            }
         }
     }
 }
